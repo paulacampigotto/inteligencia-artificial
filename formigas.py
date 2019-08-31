@@ -14,7 +14,6 @@ cells1 = [[0 for i in range(size)] for i in range(size)]
 cells2 = [[0 for i in range(size)] for i in range(size)]
 
 def display():
-    global cells1, cells2
     dispose(cells1,deadAnts)
     dispose(cells2,aliveAnts)
     pprint(cells1)
@@ -25,7 +24,7 @@ def display():
 
 
 def prob(x,y):
-    global size, radius, cells1
+    global size, radius
     itemsAround = 0
     for i in range(-1*radius,2*radius):
         for j in range(-1*radius,2*radius):
@@ -35,7 +34,6 @@ def prob(x,y):
     return (itemsAround+1)/10 # cuidado
 
 def emptyCell(position):
-    global cells1
     return cells1[position[0]][position[1]] == 0
 
 class AliveAnt:
@@ -45,20 +43,21 @@ class AliveAnt:
         self.memory = ()
 
     def live(self):
-        global cells1
         self.move()
         probability = prob(self.position[0], self.position[1])
         if emptyCell(self.position) and self.hasItem:
             choice = choices([1,0], [probability, 1-probability])
-            if choice==1: #drop
+            if choice == [1]: #drop
                 cells1[self.position[0]][self.position[1]] = 1
                 self.hasItem = False
                 self.memory = self.position
+                print("dropped")
         elif not emptyCell(self.position) and not self.hasItem:
             choice = choices([1,0], [1-probability, probability])
-            if choice==1: #pick                                   ****
+            if (choice == [1]): #pick
                 cells1[self.position[0]][self.position[1]] = 0
                 self.hasItem = True
+                print("picked")
 
     def move1(self, direction):
         if direction == 1:
@@ -79,7 +78,7 @@ class AliveAnt:
             self.move2(self.position[0]+1, self.position[1]-1)
 
     def move2(self,x,y):
-        global size, cells2
+        global size
         if x>=0 and x<size and y>=0 and y<size:
             self.position = (x,y)
             cells2[x][y] = 1
@@ -87,7 +86,6 @@ class AliveAnt:
             self.move1(randint(1,8))
 
     def move(self):
-        global cells2
         cells2[self.position[0]][self.position[1]]=0
         if self.memory == () or not self.hasItem:
             self.move1(randint(1,8))
@@ -106,7 +104,7 @@ class AliveAnt:
         cells2[self.position[0]][self.position[1]]=1
 
 def dispose(cells, n):
-    global cells2, aliveAntsList
+    global aliveAntsList
     cont = 0
     while cont < n:
         x = randint(0,size-1)
