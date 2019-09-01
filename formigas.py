@@ -17,10 +17,10 @@ def display():
     dispose(cells1,deadAnts)
     dispose(cells2,aliveAnts)
     pprint(cells1)
-    for i in range(100):
+    for i in range(10000):
         for j in aliveAntsList:
             j.live()
-            if(aliveAntsList.index(j)==0): print(j.position)
+        #    if(aliveAntsList.index(j)==0): print(j.position)
 
 
 def prob(x,y):
@@ -51,13 +51,11 @@ class AliveAnt:
                 cells1[self.position[0]][self.position[1]] = 1
                 self.hasItem = False
                 self.memory = self.position
-                print("dropped")
         elif not emptyCell(self.position) and not self.hasItem:
             choice = choices([1,0], [1-probability, probability])
             if (choice == [1]): #pick
                 cells1[self.position[0]][self.position[1]] = 0
                 self.hasItem = True
-                print("picked")
 
     def move1(self, direction):
         if direction == 1:
@@ -83,12 +81,12 @@ class AliveAnt:
             self.position = (x,y)
             cells2[x][y] = 1
         else:
-            self.move1(randint(1,8))
+            self.move1(randint(1,9))
 
     def move(self):
         cells2[self.position[0]][self.position[1]]=0
         if self.memory == () or not self.hasItem:
-            self.move1(randint(1,8))
+            self.move1(randint(1,9))
         else:
             x=0
             y=0
@@ -100,8 +98,7 @@ class AliveAnt:
                 y+=1
             elif self.memory[1] < self.position[1]:
                 y-=1
-            self.move2(x,y)
-        cells2[self.position[0]][self.position[1]]=1
+            self.move2(self.position[0] + x,self.position[1] + y)
 
 def dispose(cells, n):
     global aliveAntsList
