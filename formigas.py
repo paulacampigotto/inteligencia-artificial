@@ -10,7 +10,7 @@ import threading
 
 
 size = 50
-radius = 1
+radius = 5
 kPick = 0.01
 kDrop = 0.2
 
@@ -28,6 +28,7 @@ def screen():
         pygame.time.delay(100)
 
 def display():
+    global cells1
     dispose(deadAnts,False)
     dispose(aliveAnts,True)
     for i in range(size):
@@ -41,6 +42,15 @@ def display():
     for i in range(100000):
         for j in aliveAntsList:
             j.live()
+            pygame.draw.circle(win, (0 ,0,255), (j.position[0]*10, j.position[1]*10), 3)
+            pygame.display.update()
+            if(cells1[j.position[0]][j.position[1]] == 1):
+                pygame.draw.circle(win, (255,0,0), (j.position[0]*10, j.position[1]*10), 3)
+                pygame.display.update()
+            else:
+                pygame.draw.circle(win, (0,0,0), (j.position[0]*10, j.position[1]*10), 3)
+                pygame.display.update()
+
             #print(str(aliveAntsList.index(j)) + ':'+ str(j.position), end=" "
         #print("\n")
 
@@ -59,7 +69,7 @@ def probDrop(x,y):
     global size, radius, kDrop
     itemsAround = 0
     for i in range(-1*radius,2*radius):
-        for j in range(-1*radius,10*radius):
+        for j in range(-1*radius,1*radius):
             if (i==0 and j==0) or x+i<0 or y+j<0 or x+i>=size or y+j>=size:
                 continue
             if cells1[x+i][y+j] == 1: itemsAround+=1
@@ -81,15 +91,15 @@ class AliveAnt:
             choice = choices([1,0], [probability, 1-probability])
             if choice == [1]: #drop
                 cells1[self.position[0]][self.position[1]] = 1
-                pygame.draw.circle(win, (255,0,0), (self.position[0]*10, self.position[1]*10), 2)
+                pygame.draw.circle(win, (255,0,0), (self.position[0]*10, self.position[1]*10), 3)
                 pygame.display.update()
                 self.hasItem = False
         elif not emptyCell(self.position) and not self.hasItem:
             probability = probPick(self.position[0], self.position[1])
-            choice = choices([1,0], [1-probability, probability])
+            choice = choices([1,0], [probability, 1-probability])
             if (choice == [1]): #pick
                 cells1[self.position[0]][self.position[1]] = 0
-                pygame.draw.circle(win, (0,0,0), (self.position[0]*10, self.position[1]*10), 2)
+                pygame.draw.circle(win, (0,0,0), (self.position[0]*10, self.position[1]*10), 3)
                 pygame.display.update()
                 self.hasItem = True
 
@@ -134,7 +144,7 @@ def dispose(n, alive):
         if cells1[x][y] == 0:
             cont+=1
             cells1[x][y] = 1
-            pygame.draw.circle(win, (255,0,0), (x*10, y*10), 2)
+            pygame.draw.circle(win, (255,0,0), (x*10, y*10), 3)
             pygame.display.update()
 
 
