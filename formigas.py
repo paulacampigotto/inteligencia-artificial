@@ -10,7 +10,7 @@ import threading
 
 
 size = 50
-radius = 5
+radius = 1
 kPick = 0.01
 kDrop = 0.2
 
