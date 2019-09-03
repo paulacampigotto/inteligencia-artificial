@@ -21,7 +21,7 @@ cells1 = [[0 for i in range(size)] for i in range(size)]
 
 pygame.init()
 win = pygame.display.set_mode((size*10,size*10))
-pygame.display.set_caption("First Game")
+pygame.display.set_caption("Ant Clustering")
 
 def screen():
     while True:
@@ -53,7 +53,13 @@ def display():
 
             #print(str(aliveAntsList.index(j)) + ':'+ str(j.position), end=" "
         #print("\n")
-
+    
+    for i in range(size):
+        for j in range(size):
+            if(cells1[i][j] == 0):
+                print(" ", end="")
+            else: print("X", end="")
+        print()
 
 def probPick(x,y):
     global size, radius, kPick
@@ -152,11 +158,3 @@ t = threading.Thread(target=display)
 t2 = threading.Thread(target=screen)
 t.start()
 t2.start()
-
-for i in range(size):
-    for j in range(size):
-        if(cells1[i][j] == 0):
-            print(" ", end="")
-        else: print("X", end="")
-    print()
-#pprint(cells1)
