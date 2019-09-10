@@ -4,9 +4,6 @@ from pprint import pprint
 from random import choices
 from random import randint
 from math import ceil
-import threading
-
-
 
 
 size = 50
@@ -19,65 +16,30 @@ aliveAnts = ceil(size*size * .05)
 aliveAntsList = []
 cells1 = [[0 for i in range(size)] for i in range(size)]
 
-pygame.init()
-win = pygame.display.set_mode((size*10,size*10))
-win.fill((255,255,255))
-pygame.display.set_caption("Ant Clustering")
-
-def screen():
-    while True:
-        pygame.time.delay(100)
-
 def display():
-    global cells1
     dispose(deadAnts,False)
     dispose(aliveAnts,True)
-    for i in range(size):
-        for j in range(size):
-            if(cells1[i][j] == 0):
-                print(" ", end="")
-            else: print("X", end="")
-        print()
-    print("-"*size)
     #pprint(cells1)
-    for i in range(100000):
+    for i in range(1000000):
         for j in aliveAntsList:
             j.live()
-            pygame.draw.rect(win, (255,0,0), (j.position[0]*10, j.position[1]*10, 10,10))
-            pygame.display.update()
-            if(cells1[j.position[0]][j.position[1]] == 1):
-                pygame.draw.rect(win, (0,0,0), (j.position[0]*10, j.position[1]*10, 10,10))
-                pygame.display.update()
-            else:
-                pygame.draw.rect(win, (255,255,255), (j.position[0]*10, j.position[1]*10, 10,10))
-                pygame.display.update()
 
-            #print(str(aliveAntsList.index(j)) + ':'+ str(j.position), end=" "
-        #print("\n")
-        print(i)
-
-    for i in range(size):
-        for j in range(size):
-            if(cells1[i][j] == 0):
-                print(" ", end="")
-            else: print("X", end="")
-        print()
 
 def probPick(x,y):
     global size, radius, kPick
     itemsAround = 0
     for i in range(-1*radius,2*radius):
-        for j in range(-1*radius,1*radius):
+        for j in range(-1*radius,2*radius):
             if (i==0 and j==0) or x+i<0 or y+j<0 or x+i>=size or y+j>=size:
                 continue
             if cells1[x+i][y+j] == 1: itemsAround+=1
-    return (kPick/(kPick + itemsAround)) ** 2 # Função P do artigo
+        return (kPick/(kPick + itemsAround)) ** 2 # Função P do artigo
 
 def probDrop(x,y):
     global size, radius, kDrop
     itemsAround = 0
     for i in range(-1*radius,2*radius):
-        for j in range(-1*radius,1*radius):
+        for j in range(-1*radius,2*radius):
             if (i==0 and j==0) or x+i<0 or y+j<0 or x+i>=size or y+j>=size:
                 continue
             if cells1[x+i][y+j] == 1: itemsAround+=1
@@ -99,16 +61,12 @@ class AliveAnt:
             choice = choices([1,0], [probability, 1-probability])
             if choice == [1]: #drop
                 cells1[self.position[0]][self.position[1]] = 1
-                pygame.draw.rect(win, (0,0,0), (self.position[0]*10, self.position[1]*10, 10,10))
-                pygame.display.update()
                 self.hasItem = False
         elif not emptyCell(self.position) and not self.hasItem:
             probability = probPick(self.position[0], self.position[1])
-            choice = choices([1,0], [probability, 1-probability])
+            choice = choices([1,0], [1-probability, probability])
             if (choice == [1]): #pick
                 cells1[self.position[0]][self.position[1]] = 0
-                pygame.draw.rect(win, (255,255,255), (self.position[0]*10, self.position[1]*10, 10,10))
-                pygame.display.update()
                 self.hasItem = True
 
     def move1(self, direction):
@@ -152,11 +110,35 @@ def dispose(n, alive):
         if cells1[x][y] == 0:
             cont+=1
             cells1[x][y] = 1
-            pygame.draw.rect(win, (0,0,0), (x*10, y*10, 10,10))
-            pygame.display.update()
 
 
-t = threading.Thread(target=display)
-t2 = threading.Thread(target=screen)
-t.start()
-t2.start()
+#display()
+
+
+pygame.init()
+
+win = pygame.display.set_mode((size*10,size*10))
+pygame.display.set_caption("First Game")
+
+x = 50
+y = 50
+width = 40
+height = 60
+vel = 5
+
+run = True
+
+while run:
+    pygame.time.delay(100)
+
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            run = False
+
+    for i in range(5):
+        pygame.draw.circle(win, (255,0,0), (x, y), 5)  #This takes: window/surface, color, rect
+        pygame.display.update() # This updates the screen so we can see our rectangle
+        y=y+5
+        x = x+ 7
+
+pygame.quit()

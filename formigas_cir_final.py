@@ -24,6 +24,7 @@ win = pygame.display.set_mode((size*10,size*10))
 win.fill((255,255,255))
 pygame.display.set_caption("Ant Clustering")
 
+
 def screen():
     while True:
         pygame.time.delay(100)
@@ -32,6 +33,15 @@ def display():
     global cells1
     dispose(deadAnts,False)
     dispose(aliveAnts,True)
+
+
+    for i in range(size):
+        for j in range(size):
+            if(cells1[i][j] == 1):
+                pygame.draw.rect(win, (0,0,0), (i*10, j*10, 10,10))
+                pygame.display.update()
+
+
     for i in range(size):
         for j in range(size):
             if(cells1[i][j] == 0):
@@ -40,17 +50,9 @@ def display():
         print()
     print("-"*size)
     #pprint(cells1)
-    for i in range(100000):
+    for i in range(10000):
         for j in aliveAntsList:
             j.live()
-            pygame.draw.rect(win, (255,0,0), (j.position[0]*10, j.position[1]*10, 10,10))
-            pygame.display.update()
-            if(cells1[j.position[0]][j.position[1]] == 1):
-                pygame.draw.rect(win, (0,0,0), (j.position[0]*10, j.position[1]*10, 10,10))
-                pygame.display.update()
-            else:
-                pygame.draw.rect(win, (255,255,255), (j.position[0]*10, j.position[1]*10, 10,10))
-                pygame.display.update()
 
             #print(str(aliveAntsList.index(j)) + ':'+ str(j.position), end=" "
         #print("\n")
@@ -63,24 +65,51 @@ def display():
             else: print("X", end="")
         print()
 
+    for i in range(size):
+        for j in range(size):
+            if(cells1[i][j] == 1):
+                pygame.draw.rect(win, (0,0,0), (i*10, j*10, 10,10))
+                pygame.display.update()
+
+
 def probPick(x,y):
     global size, radius, kPick
     itemsAround = 0
-    for i in range(-1*radius,2*radius):
-        for j in range(-1*radius,1*radius):
-            if (i==0 and j==0) or x+i<0 or y+j<0 or x+i>=size or y+j>=size:
+    for i in range(-radius,radius+1):
+        for j in range(-radius,radius+1):
+            xi = x+i
+            yj = y+j
+            if (i==0 and j==0):
                 continue
-            if cells1[x+i][y+j] == 1: itemsAround+=1
+            if xi < 0:
+                xi = size-1
+            elif xi >= size:
+                xi = 0
+            if yj < 0:
+                yj = size-1
+            elif yj >= size:
+                yj = 0
+            if cells1[xi][yj] == 1: itemsAround+=1
     return (kPick/(kPick + itemsAround)) ** 2 # Função P do artigo
 
 def probDrop(x,y):
     global size, radius, kDrop
     itemsAround = 0
-    for i in range(-1*radius,2*radius):
-        for j in range(-1*radius,1*radius):
-            if (i==0 and j==0) or x+i<0 or y+j<0 or x+i>=size or y+j>=size:
+    for i in range(-radius,radius+1):
+        for j in range(-radius,radius+1):
+            xi = x+i
+            yj = y+j
+            if (i==0 and j==0):
                 continue
-            if cells1[x+i][y+j] == 1: itemsAround+=1
+            if xi < 0:
+                xi = size-1
+            elif xi >= size:
+                xi = 0
+            if yj < 0:
+                yj = size-1
+            elif yj >= size:
+                yj = 0
+            if cells1[xi][yj] == 1: itemsAround+=1
     return (itemsAround/(kDrop+itemsAround)) ** 2 # Função P do artigo
 
 def emptyCell(position):
@@ -99,16 +128,12 @@ class AliveAnt:
             choice = choices([1,0], [probability, 1-probability])
             if choice == [1]: #drop
                 cells1[self.position[0]][self.position[1]] = 1
-                pygame.draw.rect(win, (0,0,0), (self.position[0]*10, self.position[1]*10, 10,10))
-                pygame.display.update()
                 self.hasItem = False
         elif not emptyCell(self.position) and not self.hasItem:
             probability = probPick(self.position[0], self.position[1])
             choice = choices([1,0], [probability, 1-probability])
             if (choice == [1]): #pick
                 cells1[self.position[0]][self.position[1]] = 0
-                pygame.draw.rect(win, (255,255,255), (self.position[0]*10, self.position[1]*10, 10,10))
-                pygame.display.update()
                 self.hasItem = True
 
     def move1(self, direction):
@@ -131,10 +156,16 @@ class AliveAnt:
 
     def move2(self,x,y):
         global size
-        if x>=0 and x<size and y>=0 and y<size:
-            self.position = (x,y)
-        else:
-            self.move1(randint(1,9))
+        if x<0:
+            x = size-1
+        elif x>=size:
+            x = 0
+        if y<0:
+            y = size-1
+        elif y>=size:
+            y = 0
+
+        self.position = (x,y)
 
     def move(self):
         self.move1(randint(1,9))
@@ -152,8 +183,7 @@ def dispose(n, alive):
         if cells1[x][y] == 0:
             cont+=1
             cells1[x][y] = 1
-            pygame.draw.rect(win, (0,0,0), (x*10, y*10, 10,10))
-            pygame.display.update()
+
 
 
 t = threading.Thread(target=display)

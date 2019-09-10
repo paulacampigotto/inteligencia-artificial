@@ -5,16 +5,15 @@ from random import choices
 from random import randint
 from math import ceil
 import threading
-
-
-
+import timeit
 
 size = 50
 radius = 1
-kPick = 0.01
-kDrop = 0.2
+kPick = 0.1
+kDrop = 0.3
+it = 1000000
 
-deadAnts = ceil(size*size * .1)
+deadAnts = ceil(size*size * .2)
 aliveAnts = ceil(size*size * .05)
 aliveAntsList = []
 cells1 = [[0 for i in range(size)] for i in range(size)]
@@ -24,14 +23,23 @@ win = pygame.display.set_mode((size*10,size*10))
 win.fill((255,255,255))
 pygame.display.set_caption("Ant Clustering")
 
+
 def screen():
     while True:
         pygame.time.delay(100)
+
 
 def display():
     global cells1
     dispose(deadAnts,False)
     dispose(aliveAnts,True)
+
+    for i in range(size):
+        for j in range(size):
+            if(cells1[i][j] == 1):
+                pygame.draw.rect(win, (0,0,0), (i*10, j*10, 10,10))
+                pygame.display.update()
+
     for i in range(size):
         for j in range(size):
             if(cells1[i][j] == 0):
@@ -40,20 +48,16 @@ def display():
         print()
     print("-"*size)
     #pprint(cells1)
-    for i in range(100000):
+    for i in range(it+3):
         for j in aliveAntsList:
             j.live()
-            pygame.draw.rect(win, (255,0,0), (j.position[0]*10, j.position[1]*10, 10,10))
-            pygame.display.update()
-            if(cells1[j.position[0]][j.position[1]] == 1):
-                pygame.draw.rect(win, (0,0,0), (j.position[0]*10, j.position[1]*10, 10,10))
-                pygame.display.update()
-            else:
-                pygame.draw.rect(win, (255,255,255), (j.position[0]*10, j.position[1]*10, 10,10))
-                pygame.display.update()
-
-            #print(str(aliveAntsList.index(j)) + ':'+ str(j.position), end=" "
-        #print("\n")
+            if(i==it/2 or i== it/4 or i==0 or i==it or i==it/8):
+                win.fill((255,255,255))
+                for i in range(size):
+                    for j in range(size):
+                        if(cells1[i][j] == 1):
+                            pygame.draw.rect(win, (0,0,0), (i*10, j*10, 10,10))
+                            pygame.display.update()
         print(i)
 
     for i in range(size):
@@ -62,6 +66,17 @@ def display():
                 print(" ", end="")
             else: print("X", end="")
         print()
+
+    stop = timeit.default_timer()
+
+    print('Time: ', stop - start)
+    print('Alive ants: ',aliveAnts)
+    print('Dead ants: ', deadAnts)
+    print('Cells: ' ,size*size)
+    print('Radius: ',radius)
+    print('kPick: ',kPick)
+    print('kDrop: ',kDrop)
+    print('Iterations: ', it)
 
 def probPick(x,y):
     global size, radius, kPick
@@ -99,16 +114,12 @@ class AliveAnt:
             choice = choices([1,0], [probability, 1-probability])
             if choice == [1]: #drop
                 cells1[self.position[0]][self.position[1]] = 1
-                pygame.draw.rect(win, (0,0,0), (self.position[0]*10, self.position[1]*10, 10,10))
-                pygame.display.update()
                 self.hasItem = False
         elif not emptyCell(self.position) and not self.hasItem:
             probability = probPick(self.position[0], self.position[1])
             choice = choices([1,0], [probability, 1-probability])
             if (choice == [1]): #pick
                 cells1[self.position[0]][self.position[1]] = 0
-                pygame.draw.rect(win, (255,255,255), (self.position[0]*10, self.position[1]*10, 10,10))
-                pygame.display.update()
                 self.hasItem = True
 
     def move1(self, direction):
@@ -152,9 +163,8 @@ def dispose(n, alive):
         if cells1[x][y] == 0:
             cont+=1
             cells1[x][y] = 1
-            pygame.draw.rect(win, (0,0,0), (x*10, y*10, 10,10))
-            pygame.display.update()
 
+start = timeit.default_timer()
 
 t = threading.Thread(target=display)
 t2 = threading.Thread(target=screen)
