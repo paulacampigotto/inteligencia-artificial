@@ -73,17 +73,17 @@ def display():
     print('Iterations: ', it)
 
 def d(x,y,x1,y1):
-    return math.sqrt((x-x1)**2 + (y-y1)**2)
+    return math.sqrt( ( (cells1[x][y][0] - cells1[x1][y1][0]) ** 2) + ( (cells1[x][y][1] - cells1[x1][y1][1]) ** 2 ) )
 
 def f(x,y):
-    alpha = 
-    sigma = 
-    sum = 0
+    alpha = 1.5
+    sigma = 4
+    summ = 0
     for i in range(-1*radius,radius+1):
         for j in range(-1*radius,radius+1):
             if cells1[x+i][y+j] != ():
-                sum += max(1-d(x+i,y+j, x,y)/alpha, 0)
-    return (1/(sigma**2))*sum
+                summ += max(1-d(x+i,y+j, x,y)/alpha, 0)
+    return (1/(sigma**2))*summ
 
 def probPick(x,y):
     return min(1, 1/(f(x,y)**2))
