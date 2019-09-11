@@ -8,14 +8,14 @@ from threading import Thread
 import timeit
 import math
 
-size = 50
+size = 65
 radius = 1
 kPick = 0.1
 kDrop = 0.3
-it = 4000000
+it = 1000000
 
 deadAnts = 400
-aliveAnts = deadAnts*0.07
+aliveAnts = 90
 aliveAntsList = []
 cells1 = [[() for i in range(size)] for i in range(size)]
 data = []
@@ -54,18 +54,12 @@ def display():
                             else:
                                 pygame.draw.rect(win, (0,0,0), (k*10, j*10, 10,10))
                                 print(type(cells1[k][j][2]))
-                for _ant in aliveAntsList:
-                    pygame.draw.rect(win, (0,0,0), (_ant.position[0]*10, _ant.position[1]*10, 10,10))
+                if(i!=it):
+                    for _ant in aliveAntsList:
+                        pygame.draw.rect(win, (0,0,0), (_ant.position[0]*10, _ant.position[1]*10, 10,10))
                 pygame.display.update()
             ant.live()
         print('Working... {:.2f} % iteration {}'.format(100*i/it, i), end='\r')
-
-    for i in range(size):
-        for j in range(size):
-            if(cells1[i][j] == 0):
-                print(" ", end="")
-            else: print("X", end="")
-        print()
 
     stop = timeit.default_timer()
 
@@ -79,7 +73,7 @@ def display():
     print('Iterations: ', it)
 
 def probPick(x,y):
-    global size, radius, kPick
+    global size, radius, kPick,alpha
     distance=0
     itemsAround = 0
     for i in range(-1*radius,radius+1):
@@ -88,12 +82,12 @@ def probPick(x,y):
                 continue
             if cells1[x+i][y+j] != ():
                 distance = math.sqrt( ( (cells1[x][y][0] - cells1[x+i][y+j][0]) ** 2) + ( (cells1[x][y][1] - cells1[x+i][y+j][1]) ** 2 ) )
-                if(distance < 5):
+                if(distance <=4):
                     itemsAround+=1
     return (kPick/(kPick + itemsAround)) ** 2 # Função P do artigo
 
 def probDrop(x,y,item):
-    global size, radius, kDrop
+    global size, radius, kDrop,alpha
     distance=0
     itemsAround = 0
     for i in range(-1*radius,radius+1):
@@ -102,9 +96,8 @@ def probDrop(x,y,item):
                 continue
             if cells1[x+i][y+j] != ():
                 distance = math.sqrt( ( (item[0] - cells1[x+i][y+j][0]) ** 2) + ( (item[1] - cells1[x+i][y+j][1]) ** 2 ) )
-            if(distance < 5):
+            if(distance <= 4):
                 itemsAround+=1
-            ##############PROBLEMMMM
     return ((itemsAround/(kDrop+itemsAround)) ** 2) # Função P do artigo
 
 def emptyCell(position):
@@ -180,9 +173,9 @@ def readFile():
     file = open('values.txt','r')
     lines = file.readlines()
     data = []
-    print("oi")
     for i in lines:
-        k = i.split(',')
+        k = i.replace(',','.').split('\t')
+        if len(k) < 3: continue
         x = k[0]
         y = k[1]
         z = k[2]
