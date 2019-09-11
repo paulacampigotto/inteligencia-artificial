@@ -8,7 +8,7 @@ from threading import Thread
 import timeit
 import math
 
-size = 65
+size = 50
 radius = 1
 kPick = 0.1
 kDrop = 0.3
@@ -51,6 +51,28 @@ def display():
                                 pygame.draw.rect(win, (147,255,145), (k*10, j*10, 10,10))
                             elif(cells1[k][j][2] == 4):
                                 pygame.draw.rect(win, (255,210,97), (k*10, j*10, 10,10))
+                            elif(cells1[k][j][2] == 5):
+                                pygame.draw.rect(win, (66,135,245), (k*10, j*10, 10,10))
+                            elif(cells1[k][j][2] == 6):
+                                pygame.draw.rect(win, (197,66,245), (k*10, j*10, 10,10))
+                            elif(cells1[k][j][2] == 7):
+                                pygame.draw.rect(win, (245,66,126), (k*10, j*10, 10,10))
+                            elif(cells1[k][j][2] == 8):
+                                pygame.draw.rect(win, (25,224,227), (k*10, j*10, 10,10))
+                            elif(cells1[k][j][2] == 9):
+                                pygame.draw.rect(win, (147,255,145), (k*10, j*10, 10,10))
+                            elif(cells1[k][j][2] == 10):
+                                pygame.draw.rect(win, (118,245,226), (k*10, j*10, 10,10))
+                            elif(cells1[k][j][2] == 11):
+                                pygame.draw.rect(win, (101,186,26), (k*10, j*10, 10,10))
+                            elif(cells1[k][j][2] == 12):
+                                pygame.draw.rect(win, (255,251,143), (k*10, j*10, 10,10))
+                            elif(cells1[k][j][2] == 13):
+                                pygame.draw.rect(win, (255,147,38), (k*10, j*10, 10,10))
+                            elif(cells1[k][j][2] == 14):
+                                pygame.draw.rect(win, (247,33,0), (k*10, j*10, 10,10))
+                            elif(cells1[k][j][2] == 15):
+                                pygame.draw.rect(win, (161,16,158), (k*10, j*10, 10,10))
                             else:
                                 pygame.draw.rect(win, (0,0,0), (k*10, j*10, 10,10))
                                 print(type(cells1[k][j][2]))
@@ -170,7 +192,7 @@ def dispose(n, alive, data):
 
 def readFile():
     global data
-    file = open('values.txt','r')
+    file = open('values15.txt','r')
     lines = file.readlines()
     data = []
     for i in lines:

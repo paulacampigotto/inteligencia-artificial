@@ -8,12 +8,12 @@ from threading import Thread
 import timeit
 import math
 
-size = 50
-radius = 1
+size = 35
+radius = 2
 it = 1000000
 
 deadAnts = 400
-aliveAnts = 90
+aliveAnts = 75
 aliveAntsList = []
 cells1 = [[() for i in range(size)] for i in range(size)]
 data = []
@@ -48,6 +48,28 @@ def display():
                                 pygame.draw.rect(win, (147,255,145), (k*10, j*10, 10,10))
                             elif(cells1[k][j][2] == 4):
                                 pygame.draw.rect(win, (255,210,97), (k*10, j*10, 10,10))
+                            elif(cells1[k][j][2] == 5):
+                                pygame.draw.rect(win, (66,135,245), (k*10, j*10, 10,10))
+                            elif(cells1[k][j][2] == 6):
+                                pygame.draw.rect(win, (197,66,245), (k*10, j*10, 10,10))
+                            elif(cells1[k][j][2] == 7):
+                                pygame.draw.rect(win, (245,66,126), (k*10, j*10, 10,10))
+                            elif(cells1[k][j][2] == 8):
+                                pygame.draw.rect(win, (25,224,227), (k*10, j*10, 10,10))
+                            elif(cells1[k][j][2] == 9):
+                                pygame.draw.rect(win, (147,255,145), (k*10, j*10, 10,10))
+                            elif(cells1[k][j][2] == 10):
+                                pygame.draw.rect(win, (118,245,226), (k*10, j*10, 10,10))
+                            elif(cells1[k][j][2] == 11):
+                                pygame.draw.rect(win, (101,186,26), (k*10, j*10, 10,10))
+                            elif(cells1[k][j][2] == 12):
+                                pygame.draw.rect(win, (255,251,143), (k*10, j*10, 10,10))
+                            elif(cells1[k][j][2] == 13):
+                                pygame.draw.rect(win, (255,147,38), (k*10, j*10, 10,10))
+                            elif(cells1[k][j][2] == 14):
+                                pygame.draw.rect(win, (247,33,0), (k*10, j*10, 10,10))
+                            elif(cells1[k][j][2] == 15):
+                                pygame.draw.rect(win, (161,16,158), (k*10, j*10, 10,10))
                             else:
                                 pygame.draw.rect(win, (0,0,0), (k*10, j*10, 10,10))
                                 print(type(cells1[k][j][2]))
@@ -65,8 +87,6 @@ def display():
     print('Dead ants: ', deadAnts)
     print('Cells: ' ,size*size)
     print('Radius: ',radius)
-    print('kPick: ',kPick)
-    print('kDrop: ',kDrop)
     print('Iterations: ', it)
 
 def d(ant,x1,y1):
@@ -75,7 +95,7 @@ def d(ant,x1,y1):
 
 def f(ant,x,y):
     alpha = 1.5
-    sigma = 4
+    sigma = 1.7
     summ = 0
     for i in range(-1*radius,radius+1):
         for j in range(-1*radius,radius+1):
