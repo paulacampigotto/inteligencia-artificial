@@ -8,10 +8,8 @@ from threading import Thread
 import timeit
 import math
 
-size = 65
+size = 50
 radius = 1
-kPick = 0.1
-kDrop = 0.3
 it = 1000000
 
 deadAnts = 400
@@ -36,7 +34,6 @@ def display():
     dispose(aliveAnts,True,[])
 
     for i in range(1,it+1):
-        #print(i)
         for ant in aliveAntsList:
             if(i==it//2 or i== it//4 or i==1 or i==it or i==3*it//4):
                 win.fill((255,255,255))
@@ -72,24 +69,28 @@ def display():
     print('kDrop: ',kDrop)
     print('Iterations: ', it)
 
-def d(x,y,x1,y1):
-    return math.sqrt( ( (cells1[x][y][0] - cells1[x1][y1][0]) ** 2) + ( (cells1[x][y][1] - cells1[x1][y1][1]) ** 2 ) )
+def d(ant,x1,y1):
+    if emptyCell(ant.position): return math.sqrt( ( (ant.item[0] - cells1[x1][y1][0]) ** 2) + ( (ant.item[1] - cells1[x1][y1][1]) ** 2 ) )
+    return math.sqrt( ( (cells1[ant.position[0]][ant.position[1]][0] - cells1[x1][y1][0]) ** 2) + ( (cells1[ant.position[0]][ant.position[1]][1] - cells1[x1][y1][1]) ** 2 ) )
 
-def f(x,y):
+def f(ant,x,y):
     alpha = 1.5
     sigma = 4
     summ = 0
     for i in range(-1*radius,radius+1):
         for j in range(-1*radius,radius+1):
-            if cells1[x+i][y+j] != ():
-                summ += max(1-d(x+i,y+j, x,y)/alpha, 0)
+            if (i==0 and j==0) or x+i<0 or y+j<0 or x+i>=size or y+j>=size:
+                continue
+            if not emptyCell((x+i,y+j)):
+                summ += max(1-d(ant, x+i,y+j)/alpha, 0)
     return (1/(sigma**2))*summ
 
-def probPick(x,y):
-    return min(1, 1/(f(x,y)**2))
+def probPick(ant,x,y):
+    if f(ant,x,y)==0: return 1
+    return min(1, 1/(f(ant,x,y)**2))
 
-def probDrop(x,y,item):
-    return max(1, f(x,y)**4)
+def probDrop(ant,x,y):
+    return max(1, f(ant,x,y)**4)
 
 def emptyCell(position):
     return cells1[position[0]][position[1]] == ()
@@ -103,13 +104,13 @@ class AliveAnt:
         global cells1
         self.move()
         if emptyCell(self.position) and self.item != ():
-            probability = probDrop(self.position[0], self.position[1], self.item)
+            probability = probDrop(self, self.position[0], self.position[1])
             choice = choices([1,0], [probability, 1-probability])
             if choice == [1]: #drop
                 cells1[self.position[0]][self.position[1]] = self.item
                 self.item = ()
         elif not emptyCell(self.position) and self.item == ():
-            probability = probPick(self.position[0], self.position[1])
+            probability = probPick(self, self.position[0], self.position[1])
             choice = choices([1,0], [probability, 1-probability])
             if (choice == [1]): #pick
                 self.item = cells1[self.position[0]][self.position[1]]
