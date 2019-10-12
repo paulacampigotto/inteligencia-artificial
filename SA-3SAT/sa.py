@@ -1,4 +1,6 @@
 from random import randint
+import random
+from math import exp
 
 def evaluate(solution):
     global data
@@ -40,23 +42,66 @@ def randomSearch():
     solution = []
     solution = randomValues()
     trueClauses = evaluate(solution)
-    funcEvalLimit = input('iterations for random search: ')
     for i in range(int(funcEvalLimit)):
         s = randomValues()
         trueClausesS = evaluate(s)
-        print(trueClausesS)
         if(trueClauses < trueClausesS):
             trueClauses = trueClausesS
             solution = s
     return (solution, trueClauses)
 
+def initSolution():
+    s = []
+    if(variablesNumber == 20):
+        for i in range(20):
+            if(i%2 == 0): s.append(0)
+            else:
+                s.append(1)
+    elif(variablesNumber == 100):
+        for i in range(100):
+            if(i%2 == 0): s.append(0)
+            else:
+                s.append(1)
+
+    else:
+        for i in range(250):
+            if(i%2 == 0): s.append(250)
+            else:
+                s.append(1)
+    return s
+
+def generateNeighborhood(solution):
+    x = randint(0,variablesNumber-1)
+    if(solution[x] == 0): solution[x] = 1
+    else: solution[x] = 0
+    return solution
+
+def saSearch(initialSolution):
+    bestSolution = initialSolution
+    iterT = 0
+    currentT = t0
+    while(currentT > 0.0001):
+        while(iterT < saMax):  # iterT = number of iterations in currentT
+            iterT+=1
+            s = generateNeighborhood(initialSolution)
+            delta = evaluate(s) - evaluate(initialSolution)
+            if(delta > 0):
+                initialSolution = s
+                if(evaluate(s) > evaluate(bestSolution)): bestSolution = s
+            else:
+                x = round(random.uniform(0,1),4)
+                if(x < exp((delta*-1)/currentT)):
+                    initialSolution = s
+        currentT = currentT * alpha
+        iterT = 0
+    return bestSolution, evaluate(bestSolution)
+
+
 
 def readFile():
-    global data, variablesNumber, clausesNumber
+    global data, clausesNumber
     data = []
-    x = input('Variables number: ')
-    file = open('uf' + x + '-01.cnf','r')
-    variablesNumber = int(x)
+    file = open('uf' + str(variablesNumber) + '-01.cnf','r')
     if(variablesNumber == 20): clausesNumber = 91
     elif(variablesNumber == 100): clausesNumber = 430
     else: clausesNumber = 1065
@@ -82,11 +127,30 @@ def readFile():
         data.append((c1,c2,c3))
 
 
+global variablesNumber, funcEvalLimit, alpha, initialSolution
+
+#global parameter
+variablesNumber = 20
+
+#parameters random search
+funcEvalLimit = 1000
+
+#parameters sa search
+alpha = 0.8
+saMax =  10000 #iterations for thermal balance
+t0 = 30 # initial temperature
+initialSolution = initSolution()
+
 
 readFile()
 
 sol = []
 sol,number = randomSearch()
-
+print('Random: ')
 print(str(number) + '/' + str(clausesNumber))
 print(sol)
+
+sol2, number2 = saSearch(initialSolution)
+print('SA: ')
+print(str(number2) + '/' + str(clausesNumber))
+print(sol2)
