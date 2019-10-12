@@ -32,7 +32,7 @@ def evaluate(solution):
 
 def randomValues():
     solution = []
-    for i in range(clausesNumber):
+    for i in range(variablesNumber):
         solution.append(randint(0,1))
     return solution
 
@@ -44,6 +44,7 @@ def randomSearch():
     for i in range(int(funcEvalLimit)):
         s = randomValues()
         trueClausesS = evaluate(s)
+        print(trueClausesS)
         if(trueClauses < trueClausesS):
             trueClauses = trueClausesS
             solution = s
@@ -51,11 +52,14 @@ def randomSearch():
 
 
 def readFile():
-    global data, clausesNumber
+    global data, variablesNumber, clausesNumber
     data = []
-    x = input('Clauses number: ')
+    x = input('Variables number: ')
     file = open('uf' + x + '-01.cnf','r')
-    clausesNumber = int(x)
+    variablesNumber = int(x)
+    if(variablesNumber == 20): clausesNumber = 91
+    elif(variablesNumber == 100): clausesNumber = 430
+    else: clausesNumber = 1065
     lines = file.readlines()
     for i in lines:
         k = i.replace(' 0','').split(' ')
@@ -84,5 +88,5 @@ readFile()
 sol = []
 sol,number = randomSearch()
 
-print(number)
+print(str(number) + '/' + str(clausesNumber))
 print(sol)
