@@ -71,9 +71,11 @@ def initSolution():
     return s
 
 def generateNeighborhood(solution):
-    x = randint(0,variablesNumber-1)
-    if(solution[x] == 0): solution[x] = 1
-    else: solution[x] = 0
+    for i in range(variablesNumber):
+        x = randint(0,100)
+        if(x <= 5): # probability of changing the variable value = 5%
+            if(solution[i] == 0): solution[i] = 1
+            else: solution[i] = 0
     return solution
 
 def saSearch(initialSolution):
