@@ -85,15 +85,15 @@ def saSearch(initialSolution):
     while(currentT > 0.0001):
         while(iterT < saMax):  # iterT = number of iterations in currentT
             iterT+=1
-            s = generateNeighborhood(initialSolution)
-            delta = evaluate(s) - evaluate(initialSolution)
+            neighbor = generateNeighborhood(initialSolution)
+            delta = evaluate(neighbor) - evaluate(initialSolution)
             if(delta > 0):
-                initialSolution = s
-                if(evaluate(s) > evaluate(bestSolution)): bestSolution = s
+                initialSolution = neighbor
+                if(evaluate(neighbor) > evaluate(bestSolution)): bestSolution = neighbor
             else:
                 x = round(random.uniform(0,1),4)
                 if(x < exp((delta*-1)/currentT)):
-                    initialSolution = s
+                    initialSolution = neighbor
         currentT = currentT * alpha
         iterT = 0
     return bestSolution, evaluate(bestSolution)
@@ -146,13 +146,32 @@ initialSolution = initSolution()
 
 readFile()
 
-sol = []
-sol,number = randomSearch()
-print('Random: ')
-print(str(number) + '/' + str(clausesNumber))
-print(sol)
+st = []
 
-sol2, number2 = saSearch(initialSolution)
-print('SA: ')
-print(str(number2) + '/' + str(clausesNumber))
-print(sol2)
+st+= 'rand\n'
+for i in range(10):
+    sol = []
+    randVec = []
+    sol,number = randomSearch()
+    print('Random: '+ str(i+1)+ ' :')
+    print(str(number))
+    print(sol)
+    print()
+    randVec.append(number)
+    st+= str(number) + '\n'
+
+st+= 'sa\n'
+for i in range(10):
+    sol2 = []
+    saVec = []
+    sol2, number2 = saSearch(initialSolution)
+    print('SA: '+ str(i)+ ' :')
+    print(str(number2) )
+    print(sol2)
+    print()
+    saVec.append(number2)
+    st+= str(number) + '\n'
+
+f=open("results.txt", "w+")
+f.write(st)
+f.close()
