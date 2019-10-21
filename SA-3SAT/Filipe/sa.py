@@ -47,6 +47,7 @@ def run_sa(T0, TN, N, SAmax):
         i += 1
         T = A/(i+1) + B
         IterT = 0
+    print("100.00 %")
     return conv
 
 def evaluate(s):
