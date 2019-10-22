@@ -18,10 +18,10 @@ def neighbor(s):
     return new_sol
 
 def run_sa(T0, TN, N, SAmax):
-    global initial_s
+    global initial_s, formula
     s = initial_s[:]
     best = s[:]
-    conv = [evaluate(best)]
+    conv = []
     IterT = 0
     T = T0
     A = (T0-TN)*N/(N-1)
@@ -38,12 +38,14 @@ def run_sa(T0, TN, N, SAmax):
                     best = n[:]
             else:
                 try:
-                    if uniform(0,1) < exp(-delta/T):
+                    if uniform(0,1) < exp(delta/T):
                         s = n[:]
                 except OverflowError:
                     s = n[:]
             print("{:.2f} %".format(100 * (IterT/SAmax * 1/N + i/N)), end='\r')
-        conv += [evaluate(best)]
+        conv += [(T, evaluate(best))]
+        if evaluate(best) == len(formula):
+            break
         i += 1
         T = A/(i+1) + B
         IterT = 0
@@ -75,14 +77,20 @@ def make_formula(filename, n_var):
         if len(cl) > 0:
             formula += [cl]
 
+def plot(conv):
+    global formula
+    plt.gca().invert_xaxis()
+    plt.axhline(y=len(formula), color='red', linestyle='dashed', linewidth=0.8)
+    plt.plot(*zip(*conv), color='blue', linewidth=0.8)
+    plt.xlabel("temperatura")
+    plt.ylabel("no. de cláusulas satisfeitas")
+    plt.show()
+
 make_formula("uf20-01.cnf", 20)
-plt.plot(run_sa(30,.0001,30,10000))
-plt.show()
+plot(run_sa(40,.0001,40,10000))
 
 make_formula("uf100-01.cnf", 100)
-plt.plot(run_sa(30,.0001,30,10000))
-plt.show()
+plot(run_sa(1000,.0001,100,10000))
 
 make_formula("uf250-01.cnf", 250)
-plt.plot(run_sa(30,.0001,30,10000))
-plt.show()
+plot(run_sa(1000,.0001,100,10000))
