@@ -43,9 +43,7 @@ def run_sa(T0, TN, N, SAmax):
                 except OverflowError:
                     s = n[:]
             print("{:.2f} %".format(100 * (IterT/SAmax * 1/N + i/N)), end='\r')
-        conv += [(T, evaluate(best))]
-        if evaluate(best) == len(formula):
-            break
+        conv += [(T, evaluate(s))]
         i += 1
         T = A/(i+1) + B
         IterT = 0
@@ -79,10 +77,10 @@ def make_formula(filename, n_var):
 
 def plot(conv):
     global formula
-    plt.gca().invert_xaxis()
     plt.axhline(y=len(formula), color='red', linestyle='dashed', linewidth=0.8)
-    plt.plot(*zip(*conv), color='blue', linewidth=0.8)
-    plt.xlabel("temperatura")
+    plt.plot([i[1] for i in conv], color='blue', linewidth=0.8)
+    plt.xlabel("diminuição de temperatura")
+    plt.tick_params(axis='x', which='both', bottom=False, top=False, labelbottom=False)
     plt.ylabel("no. de cláusulas satisfeitas")
     plt.show()
 
