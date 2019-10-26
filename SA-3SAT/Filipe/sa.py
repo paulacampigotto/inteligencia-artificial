@@ -75,20 +75,26 @@ def make_formula(filename, n_var):
         if len(cl) > 0:
             formula += [cl]
 
-def plot(conv):
+def plot(conv, decimal_places):
     global formula
     plt.axhline(y=len(formula), color='red', linestyle='dashed', linewidth=0.8)
     plt.plot([i[1] for i in conv], color='blue', linewidth=0.8)
-    plt.xlabel("diminuição de temperatura")
-    plt.tick_params(axis='x', which='both', bottom=False, top=False, labelbottom=False)
+    plt.xlabel("temperatura")
+    #plt.tick_params(axis='x', which='both', bottom=False, top=False, labelbottom=False)
+    x_values = []
+    x_ticks = []
+    for i in range(0, len(conv), len(conv)//10):
+        x_values += [i]
+        x_ticks += [round(conv[i][0], decimal_places)]
+    plt.xticks(x_values, x_ticks)
     plt.ylabel("no. de cláusulas satisfeitas")
     plt.show()
 
 make_formula("uf20-01.cnf", 20)
-plot(run_sa(40,.0001,40,10000))
+plot(run_sa(40,.0001,40,10000), 4)
 
 make_formula("uf100-01.cnf", 100)
-plot(run_sa(1000,.0001,100,10000))
+plot(run_sa(1000,.0001,100,10000), 4)
 
 make_formula("uf250-01.cnf", 250)
-plot(run_sa(1000,.0001,100,10000))
+plot(run_sa(1000,.0001,100,10000), 4)
