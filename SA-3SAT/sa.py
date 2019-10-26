@@ -72,31 +72,39 @@ def initSolution():
 
 def generateNeighborhood(solution):
     for i in range(variablesNumber):
-        x = randint(0,100)
+        x = randint(1,100)
         if(x <= 5): # probability of changing the variable value = 5%
             if(solution[i] == 0): solution[i] = 1
             else: solution[i] = 0
     return solution
 
-def saSearch(initialSolution):
-    bestSolution = initialSolution
+
+def saSearch(currentSolution):
+    bestSolution = currentSolution[:]
+    conv = [evaluate(bestSolution)]
     iterT = 0
     currentT = t0
-    while(currentT > 0.0001):
+    i = 0
+    while(currentT > 0.01):
         while(iterT < saMax):  # iterT = number of iterations in currentT
             iterT+=1
-            s = generateNeighborhood(initialSolution)
-            delta = evaluate(s) - evaluate(initialSolution)
+            neighbor = generateNeighborhood(currentSolution)
+            delta = evaluate(neighbor) - evaluate(currentSolution)
             if(delta > 0):
-                initialSolution = s
-                if(evaluate(s) > evaluate(bestSolution)): bestSolution = s
+                currentSolution = neighbor[:]
+                if(evaluate(neighbor) > evaluate(bestSolution)): bestSolution = neighbor[:]
             else:
-                x = round(random.uniform(0,1),4)
-                if(x < exp((delta*-1)/currentT)):
-                    initialSolution = s
-        currentT = currentT * alpha
+                x = random.uniform(0,1)
+                if(x < exp(-delta/currentT)):
+                    currentSolution = neighbor[:]
+        conv += [evaluate(bestSolution)]
+        a = (t0 - 0.0001) * (saMax) / (saMax - 1)
+        b = t0 - a
+        currentT = a/(i+1) + b
         iterT = 0
-    return bestSolution, evaluate(bestSolution)
+        i += 1
+        print(currentT, end='\r')
+    return bestSolution, evaluate(bestSolution), conv
 
 
 
@@ -139,20 +147,43 @@ funcEvalLimit = 1000
 
 #parameters sa search
 alpha = 0.8
-saMax =  10000 #iterations for thermal balance
+saMax =  1000 #iterations for thermal balance
 t0 = 30 # initial temperature
 initialSolution = initSolution()
 
 
 readFile()
 
-sol = []
-sol,number = randomSearch()
-print('Random: ')
-print(str(number) + '/' + str(clausesNumber))
-print(sol)
+st = ""
 
-sol2, number2 = saSearch(initialSolution)
-print('SA: ')
-print(str(number2) + '/' + str(clausesNumber))
-print(sol2)
+st+= 'rand\n'
+for i in range(10):
+    sol = []
+    randVec = []
+    sol,number = randomSearch()
+    print('Random: '+ str(i+1)+ ' :')
+    print(str(number))
+    print(sol)
+    print()
+    randVec.append(number)
+    st+= str(number) + '\n'
+
+st+= 'sa\n'
+for i in range(1):
+    sol2 = []
+    saVec = []
+    sol2, number2, conv = saSearch(initialSolution)
+    print('SA: '+ str(i)+ ' :')
+    print(str(number2) )
+    print(sol2)
+    print()
+    saVec.append(number2)
+    st+= str(number) + '\n'
+    f = open('teste.txt', 'w+')
+    f.write("[" + ",".join([str(i) for i in conv]) + "]")
+    print(conv)
+
+
+#f=open("results.txt", "w+")
+#f.write(st)
+#f.close()
